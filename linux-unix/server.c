@@ -1,5 +1,6 @@
 #include "header.h"
-
+#define PRIVATE_KEY_SERVER
+#define PUBLIC_KEY_SERVER
 int run_server()
 {
 
@@ -73,7 +74,21 @@ int run_server()
             fprintf(stderr, "Received a malformed packet of size: %ld\n", bytes_received);
             continue;
         }
-
+        // check for and make a handshake 
+        if(strcmp(received_packet.payload.data ,"hello server") == 0){
+            // issue certificate 
+            /*
+            0) send public key to certificate authority
+            1) certificate authority create certificate 
+                    a)  who the certificate is issued  <issued to and issued from >
+                    b) server pubkud key
+                    c)encrypted server public key (serverpk + ca public key  ) // is called signature 
+            2) send certificate to client
+            client take public key of ca 
+            decrypt signature
+            
+            */
+        }
         // printf("-> Packet Number: %d | Connection ID Src: %d | Dest: %d | Length: %ld\n",
         //        received_packet.header.packet_number,
         //        received_packet.header.connection_id_start,

@@ -59,6 +59,7 @@ int send_packet_client(int socket_peer, struct addrinfo *peer_address, char *fil
 
     int total_packets = (file_size + CHUNK_SIZE - 1) / CHUNK_SIZE;
     printf("File size: %ld bytes, Total packets: %d\n", file_size, total_packets);
+    // make a handshake 
 
     for (int packet_number = 1; packet_number <= total_packets; packet_number++)
     {
@@ -112,4 +113,27 @@ int send_packet_client(int socket_peer, struct addrinfo *peer_address, char *fil
     printf("\n File \"%s\" successfully sent!\n", filename);
     return 0;
 }
+
+int client_hello(int socket_peer, struct addrinfo *peer_address){
+    quic_packet initial;
+    initial.header.packet_number = 0;
+    initial.header.connection_id_start = 100;
+    initial.header.connection_id_destination = 200;
+    initial.header.length = sizeof(initial.payload);
+    strcpy(initial.payload.data ,"hello_server");
+    initial.payload.id = -1;
+    initial.payload.total_packet = 1;
+    initial.payload.ack = 0; 
+    ssize_t bytes_sent = sendto(socket_peer, &initial, sizeof(initial), 0,
+                                        peer_address->ai_addr, peer_address->ai_addrlen);
+    if (bytes_sent < 0)
+        {
+            perror("sendto() failed");
+            return 0; 
+        }
+    printf("Sent %ld bytes. Waiting for SERVER HELLO \n", bytes_sent);
+    // certificate to be recieved 
+    return 1;
+}
+
 

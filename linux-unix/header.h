@@ -15,12 +15,15 @@
 #define CHUNK_SIZE 1024
 #define PORT "8080"
 #define SERVER_IP "127.0.0.1"
+#define CERTIFICATE_SERVER_IP "127.0.0.2"
+#define CERTIFICATE_SERVER_PORT "8081"
 #define SERVER_DOMAIN "exampledomain.com"
 #define BUFFER_SIZE 2048
 #define FILENAME "test.txt"
 
 #define MAX_RETRIES 5
 #define TIMEOUT_SEC 2  // timeout in seconds
+
 
 typedef struct {
     int packet_number;           // field to be encrypted 
