@@ -1,4 +1,5 @@
 #include "header.h"
+
 int run_server()
 {
 
@@ -73,29 +74,19 @@ int run_server()
             continue;
         }
 
-        printf("-> Packet Number: %d | Connection ID Src: %d | Dest: %d | Length: %ld\n",
-               received_packet.header.packet_number,
-               received_packet.header.connection_id_start,
-               received_packet.header.connection_id_destination,
-               received_packet.header.length);
+        // printf("-> Packet Number: %d | Connection ID Src: %d | Dest: %d | Length: %ld\n",
+        //        received_packet.header.packet_number,
+        //        received_packet.header.connection_id_start,
+        //        received_packet.header.connection_id_destination,
+        //        received_packet.header.length);
 
-        printf("-> Payload ACK: %d | ID: %d | Total: %d\n",
-               received_packet.payload.ack,
-               received_packet.payload.id,
-               received_packet.payload.total_packet);
+        // printf("-> Payload ACK: %d | ID: %d | Total: %d\n",
+        //        received_packet.payload.ack,
+        //        received_packet.payload.id,
+        //        received_packet.payload.total_packet);
 
         // Build ACK packet
-        quic_packet ack_packet;
-        ack_packet.header.packet_number = received_packet.header.packet_number;
-        ack_packet.header.connection_id_start = received_packet.header.connection_id_destination;
-        ack_packet.header.connection_id_destination = received_packet.header.connection_id_start;
-        ack_packet.header.length = sizeof(ack_packet.payload);
-
-        ack_packet.payload.ack = 1;
-        ack_packet.payload.id = received_packet.payload.id;
-        ack_packet.payload.total_packet = received_packet.payload.total_packet;
-        memset(ack_packet.payload.data, 0, CHUNK_SIZE);
-        strcpy((char *)ack_packet.payload.data, "ACK");
+        quic_packet ack_packet = build_ack(received_packet);
 
         printf("<- Sending ACK (Packet: %d) back to client...\n\n",
                ack_packet.header.packet_number);
