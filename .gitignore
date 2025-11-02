@@ -1,4 +1,4 @@
 *.exe
 test.*
-.DS_STORE
+.DS_Store
 *.pem
