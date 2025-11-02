@@ -1,0 +1,31 @@
+CC = gcc
+CFLAGS = -Wall -g
+LDFLAGS =
+LIBS = -lcrypto
+UNAME := $(shell uname)
+ifeq ($(UNAME), Darwin)
+    BREW_PREFIX = $(shell brew --prefix openssl 2>/dev/null)
+    ifeq ($(BREW_PREFIX),)
+        $(warning "Homebrew 'openssl' not found. Please run 'brew install openssl'.")
+    else
+        CFLAGS += -I$(BREW_PREFIX)/include
+        LDFLAGS += -L$(BREW_PREFIX)/lib
+        $(info "macOS detected: Adding Homebrew OpenSSL paths.")
+    endif
+endif
+TARGET = quic_demo
+SRCS = main.c client.c server.c helper.c certificate_server.c
+OBJS = $(SRCS:.c=.o)
+TARGET_UTIL = get_cert
+SRC_UTIL = get_cert.c
+.PHONY: all
+all: $(TARGET) $(TARGET_UTIL)
+$(TARGET): $(OBJS)
+	$(CC) $(LDFLAGS) -o $(TARGET) $(OBJS) $(LIBS)
+$(TARGET_UTIL): $(SRC_UTIL)
+	$(CC) -Wall -g -o $(TARGET_UTIL) $(SRC_UTIL)
+%.o: %.c header.h
+	$(CC) $(CFLAGS) -c $< -o $@
+.PHONY: clean
+clean:
+	rm -f $(TARGET) $(TARGET_UTIL) $(OBJS)

@@ -11,13 +11,10 @@
 #include <time.h>
 #include <netdb.h>
 #include <errno.h>
-
+#include <openssl/aes.h> 
+#include <openssl/err.h> 
 #include <openssl/evp.h>
-#include <openssl/rand.h>
-#include <openssl/pem.h>
-#include <openssl/rsa.h>
-#include <openssl/bio.h>
-#include <netinet/in.h>
+
 
 #define CHUNK_SIZE 1024
 #define PORT "8080"
@@ -31,40 +28,36 @@
 #define MAX_RETRIES 5
 #define TIMEOUT_SEC 2  // timeout in seconds
 
+#define MAX_ISSUER_LEN 128
+#define MAX_SUBJECT_LEN 128
 
 typedef struct {
-    int packet_number;           // field to be encrypted 
+    int packet_number;
     int connection_id_start;
     int connection_id_destination;
-    long length;                 // field to be encrypted
+    long length;                 // Length of data in payload_buffer
 } quic_packet_header;
 
 typedef struct {
     int ack;
     int id;
     int total_packet; 
-    unsigned char data[CHUNK_SIZE];  // raw data chunk
+    unsigned char data[CHUNK_SIZE]; 
 } quic_packet_payload_plain;
+
 
 typedef struct {
     quic_packet_header header;
     // 16 (IV) + 1036 (struct) + 4 (padding) = 1056 bytes.
     unsigned char payload_buffer[1060];
+    
 } quic_packet;
 
-
 // Function prototypes
-extern void send_packet_server();
-extern int send_packet_client(int socket_peer, struct addrinfo *peer_address, char *filename);
-extern void recieve_packet_server();
-extern void take_client_ip(); 
-extern void recieve_packet_client();
-extern void send_certificate();
-extern void recieve_packet_certificate_server();
 extern int run_server();
 extern int run_client();
-extern quic_packet build_ack(quic_packet recieve_packet_client);
-extern quic_packet build_packet_from_file(char *filename, int packet_number, int total_packets);
+extern int run_certificate_server();
+
 extern int aes_encrypt(const unsigned char *plaintext, int plaintext_len, const unsigned char *key,
                        const unsigned char *iv, unsigned char *ciphertext);
 

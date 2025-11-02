@@ -1,10 +1,5 @@
 #include "header.h"
 
-typedef struct {
-    quic_packet_header header;
-    unsigned char payload_buffer[1060]; 
-} quic_packet;
-
 int main(int argc, char *argv[])
 {
     //Read server_pub.pem  
